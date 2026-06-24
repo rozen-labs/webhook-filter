@@ -1,0 +1,59 @@
+server:
+  listen_addr: ":8080"
+  request_timeout_seconds: 10
+  max_body_bytes: 1048576
+
+logging:
+  level: info
+  format: json
+  log_body: false
+
+security:
+  default_filtered_status_code: 202
+  default_filtered_body: "ignored"
+
+routes:
+  - name: github-issue-label-authorized-user
+    match:
+      path: "/github/issues"
+      method: "POST"
+    auth:
+      all:
+        - type: github_signature
+          secret_env: GITHUB_WEBHOOK_SECRET
+        - type: header_secret
+          header: X-Webhook-Token
+          secret_env: TUNNEL_WEBHOOK_TOKEN
+    conditions:
+      expression: >
+        headers["X-GitHub-Event"] == "issues" &&
+        body.action == "labeled" &&
+        body.label.name == config.required_label &&
+        body.sender.login in config.authorized_users
+    config:
+      required_label: "deploy-approved"
+      authorized_users:
+        - alice
+        - bob
+        - automation-bot
+    forward:
+      url: "http://actual-service:8080/webhook/github"
+      method: "POST"
+      preserve_body: true
+      preserve_headers:
+        - Content-Type
+        - X-GitHub-Event
+        - X-GitHub-Delivery
+        - X-Hub-Signature-256
+      add_headers:
+        X-Webhook-Filter: "passed"
+      timeout_seconds: 5
+    response:
+      on_filtered:
+        status_code: 202
+        body: "ignored"
+      on_forward_success:
+        mode: proxy
+      on_forward_error:
+        status_code: 502
+        body: "forward failed"

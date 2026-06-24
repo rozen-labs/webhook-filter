@@ -1,0 +1,18 @@
+# Binaries
+webhook-filter
+*.exe
+*.test
+
+# Build artifacts
+bin/
+out/
+coverage.out
+
+# Editors / OS
+.DS_Store
+.idea/
+.vscode/
+*.swp
+
+# Go workspace noise
+/tmp/
