@@ -20,6 +20,7 @@ It does **not** contain hardcoded GitHub logic. If you want GitHub issue filteri
 - GitHub signature auth
 - generic HMAC-SHA256 auth
 - composite auth with `all` / `any`
+- optional unauthenticated mode (`auth: none` or omitted)
 - CEL condition evaluation
 - configurable forwarding
 - structured logs
@@ -42,6 +43,10 @@ curl http://localhost:8080/healthz
 ```
 
 ## Configuration
+
+If you don't want request authentication, use `auth: none` or omit the `auth` block entirely. That is supported, but obviously less secure.
+
+If you do configure secret-based auth, the referenced environment variables must exist at startup.
 
 Default config path:
 

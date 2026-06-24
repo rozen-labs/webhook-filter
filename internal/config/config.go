@@ -271,7 +271,7 @@ func validateAuth(a AuthConfig, routeName string) error {
 	}
 
 	if a.Type == "" {
-		return fmt.Errorf("routes[%s].auth.type is required when all/any are not used", routeName)
+		a.Type = "none"
 	}
 	switch a.Type {
 	case "none":

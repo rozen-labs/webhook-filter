@@ -36,7 +36,7 @@ func Authenticate(rule config.AuthConfig, req *http.Request, rawBody []byte) err
 	}
 
 	switch rule.Type {
-	case "none":
+	case "", "none":
 		return nil
 	case "header_secret":
 		return checkHeaderSecret(req.Header.Get(rule.Header), os.Getenv(rule.SecretEnv))

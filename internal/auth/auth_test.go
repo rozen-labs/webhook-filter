@@ -30,6 +30,13 @@ func TestAuthenticateBearer(t *testing.T) {
 	}
 }
 
+func TestAuthenticateDefaultNone(t *testing.T) {
+	req := httptest.NewRequest(http.MethodPost, "/", strings.NewReader(`{}`))
+	if err := Authenticate(config.AuthConfig{}, req, []byte(`{}`)); err != nil {
+		t.Fatalf("authenticate: %v", err)
+	}
+}
+
 func TestAuthenticateGitHubSignature(t *testing.T) {
 	t.Setenv("GITHUB_WEBHOOK_SECRET", "secret")
 	body := []byte(`{"action":"labeled"}`)
